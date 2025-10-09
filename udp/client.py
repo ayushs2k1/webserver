@@ -1,6 +1,5 @@
 from socket import *
 import time
-import sys
 
 def ping(host, port):
     resps = []
@@ -47,5 +46,5 @@ def ping(host, port):
     return resps
 
 if __name__ == '__main__':
-    resps = ping('127.0.0.1', 12000)
+    resps = ping('localhost', 12000)
     print(resps)
