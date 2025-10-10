@@ -21,9 +21,9 @@ def ping(host, port):
                 clientSocket.sendto(message.encode(), (host, port))
 
                 # Wait for the server response
-                start_recv = time.time();
+                start_recv = time.time()
                 response, address = clientSocket.recvfrom(1024)
-                end_recv = time.time();
+                end_recv = time.time()
             
                 # Calculate the RTT
                 rtt = (end_recv - start_recv)
