@@ -13,30 +13,29 @@ def ping_standard(host, port):
     sent = 0
     received = 0
 
-    try:
-        for seq in range(1, 11):
-            send_time = time.time()
-            message = 'Ping {0} {1}\n'.format(seq, send_time)
-            sent += 1
+    for seq in range(1, 11):
+        send_time = time.time()
+        message = 'Ping {0} {1}\n'.format(seq, send_time)
+        sent += 1
 
-            try:
-                clientSocket.sendto(message.encode(), (host, port))
-                response, address = clientSocket.recvfrom(1024)
-                recv_time = time.time()
-                rtt = recv_time - send_time
+        try:
+            clientSocket.sendto(message.encode(), (host, port))
+            response, address = clientSocket.recvfrom(1024)
+            recv_time = time.time()
+            rtt = recv_time - send_time
 
-                response = response.decode().strip()
+            response = response.decode()
 
-                resps.append((seq, response, rtt))
-                rtt_list.append(rtt)
-                received += 1
+            resps.append((seq, response, rtt))
+            rtt_list.append(rtt)
+            received += 1
 
-            except timeout:
-                resps.append((seq, 'Request timed out', 0))
-            except Exception as e:
-                resps.append((seq, str(e), 0))
-    finally:
-        clientSocket.close()
+        except timeout:
+            resps.append((seq, 'Request timed out', 0.0))
+        except Exception as e:
+            resps.append((seq, str(e), 0.0))
+    
+    clientSocket.close()
 
     # Calculate statistics
     loss = ((sent - received) / sent) * 100
