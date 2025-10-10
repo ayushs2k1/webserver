@@ -9,40 +9,36 @@ def ping(host, port):
     clientSocket.settimeout(1)
     
     # Ping for 10 times
-    try:
-        for seq in range(1,11):
-            # Create the ping message
-            send_time = time.time()
-            # Example message: Ping 3 1696804876.324
-            message = 'Ping {0} {1}\n'.format(seq, send_time)
+    for seq in range(1,11):
+        # Create the ping message
+        send_time = time.time()
+        # Example message: Ping 3 1696804876.324
+        message = 'Ping {0} {1}\n'.format(seq, send_time)
 
-            try:
-                # Send the UDP packet with Ping message to the server
-                clientSocket.sendto(message.encode(), (host, port))
+        try:
+            # Send the UDP packet with Ping message to the server
+            clientSocket.sendto(message.encode(), (host, port))
 
-                # Wait for the server response
-                start_recv = time.time()
-                response, address = clientSocket.recvfrom(1024)
-                end_recv = time.time()
+            # Wait for the server response
+            response, address = clientSocket.recvfrom(1024)
+            recv_time = time.time()
+
+            # Calculate RTT
+            rtt = recv_time - send_time
+
+            # Record Server response
+            response = response.decode()
+            resps.append((seq, response, rtt))
+
+        except timeout:
+            # Server does not respond within 1 second
+            resps.append((seq, 'Request timed out', 0.0))
             
-                # Calculate the RTT
-                rtt = (end_recv - start_recv)
-
-                # Record Server response
-                response = response.decode().strip()
-                resps.append((seq, response, rtt))
-
-            except timeout:
-                # Server does not respond within 1 second
-                resps.append((seq, 'Request timed out', 0))
-            
-            except Exception as e:
-                # Handle other exceptions
-                resps.append((seq, str(e), 0))
+        except Exception as e:
+            # Handle other exceptions
+            resps.append((seq, str(e), 0.0))
     
-    finally:
-        clientSocket.close()
-
+    clientSocket.close()
     return resps
 
 if __name__ == '__main__':
